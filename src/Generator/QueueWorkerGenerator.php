@@ -4,6 +4,7 @@ namespace Drupal\test\Generator;
 
 use Drupal\Console\Core\Generator\Generator;
 use Drupal\Console\Core\Generator\GeneratorInterface;
+use Drupal\Console\Extension\Manager;
 
 /**
  * Class QueueWorkerGenerator
@@ -12,18 +13,36 @@ use Drupal\Console\Core\Generator\GeneratorInterface;
  */
 class QueueWorkerGenerator extends Generator implements GeneratorInterface
 {
+  /**
+   * Extension Manager.
+   *
+   * @var Manager
+   */
+  protected $extensionManager;
+
+  /**
+    * PluginQueueWorker constructor.
+    *
+    * @param \Drupal\Console\Extension\Manager $extensionManager
+    */
+   public function __construct(
+       Manager $extensionManager
+   ) {
+       $this->extensionManager = $extensionManager;
+   }
 
   /**
    * {@inheritdoc}
    */
   public function generate(array $parameters)
   {
-//    Example how to render a twig template using the renderFile method
-//    $this->renderFile(
-//      'path/to/file.php.twig',
-//      'path/to/file.php',
-//      $parameters
-//    );
+    $module = $parameters['module'];
+    $queue_file_name = $parameters['queue_file_name'];
+    $this->renderFile(
+      'module/src/Plugin/QueueWorker/queue_worker.php.twig',
+      $this->extensionManager->getPluginPath($module, 'QueueWorker') . '/' . $queue_file_name . '.php',
+      $parameters
+    );
   }
 
 }
