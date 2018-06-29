@@ -1,20 +1,20 @@
 <?php
 
-namespace Drupal\test\Command;
+namespace Drupal\drupal_console_queue\Command;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Drupal\Console\Core\Command\ContainerAwareCommand;
-use Drupal\Console\Annotations\DrupalCommand;
 use Drupal\Console\Core\Generator\GeneratorInterface;
 use Drupal\Console\Command\Shared\ModuleTrait;
 use Drupal\Console\Command\Shared\ConfirmationTrait;
+use Drupal\Console\Annotations\DrupalCommand;
 
 /**
  * Class QueueWorkerCommand.
  *
  * @DrupalCommand (
- *     extension="test",
+ *     extension="drupal_console_queue",
  *     extensionType="module"
  * )
  */
@@ -48,7 +48,7 @@ class QueueWorkerCommand extends ContainerAwareCommand {
    */
   protected function configure() {
     $this
-      ->setName('generate:queue')
+      ->setName('generate:plugin:queue')
       ->setDescription($this->trans('commands.generate.plugin.queue.description'))
       ->setHelp($this->trans('commands.generate.plugin.queue.help'))
       ->addOption(
@@ -56,7 +56,7 @@ class QueueWorkerCommand extends ContainerAwareCommand {
           NULL,
           InputOption::VALUE_REQUIRED,
           'option'
-      )->setAliases(['gqueue']);
+      )->setAliases(['gpq']);
   }
 
   /**

@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains test.module.
+ * Contains drupal_console_queue.module.
  */
 
 use Drupal\Core\Routing\RouteMatchInterface;
@@ -10,9 +10,9 @@ use Drupal\Core\Routing\RouteMatchInterface;
 /**
  * Implements hook_help().
  */
-function test_help($route_name, RouteMatchInterface $route_match) {
+function drupal_console_queue_help($route_name, RouteMatchInterface $route_match) {
   switch ($route_name) {
-    // Main module help for the test module.
+    // Main module help for the drupal_console_queue module.
     case 'help.page.drupal_console_queue':
       $output = '';
       $output .= '<h3>' . t('About') . '</h3>';

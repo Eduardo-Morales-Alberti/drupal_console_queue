@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\test\Generator;
+namespace Drupal\drupal_console_queue\Generator;
 
 use Drupal\Console\Core\Generator\Generator;
 use Drupal\Console\Core\Generator\GeneratorInterface;
