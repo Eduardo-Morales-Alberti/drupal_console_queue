@@ -7,35 +7,35 @@ use Drupal\Console\Core\Generator\GeneratorInterface;
 use Drupal\Console\Extension\Manager;
 
 /**
- * Class QueueWorkerGenerator
+ * Class QueueWorkerGenerator.
  *
  * @package Drupal\Console\Generator
  */
-class QueueWorkerGenerator extends Generator implements GeneratorInterface
-{
+class QueueWorkerGenerator extends Generator implements GeneratorInterface {
+
   /**
    * Extension Manager.
    *
-   * @var Manager
+   * @var \Drupal\Console\Extension\Manager
    */
   protected $extensionManager;
 
   /**
-    * PluginQueueWorker constructor.
-    *
-    * @param \Drupal\Console\Extension\Manager $extensionManager
-    */
-   public function __construct(
+   * PluginQueueWorker constructor.
+   *
+   * @param \Drupal\Console\Extension\Manager $extensionManager
+   *   Extension manager.
+   */
+  public function __construct(
        Manager $extensionManager
    ) {
-       $this->extensionManager = $extensionManager;
-   }
+    $this->extensionManager = $extensionManager;
+  }
 
   /**
    * {@inheritdoc}
    */
-  public function generate(array $parameters)
-  {
+  public function generate(array $parameters) {
     $module = $parameters['module'];
     $queue_file_name = $parameters['queue_file_name'];
     $this->renderFile(

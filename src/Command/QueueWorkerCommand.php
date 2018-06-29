@@ -33,9 +33,8 @@ class QueueWorkerCommand extends ContainerAwareCommand {
   /**
    * Constructs a new QueueWorkerCommand object.
    *
-   * @param \Drupal\Console\Generator\ModuleFileGenerator $queue_generator
+   * @param \Drupal\Console\Core\Generator\GeneratorInterface $queue_generator
    *   Queue Generator.
-   *
    */
   public function __construct(
     GeneratorInterface $queue_generator
@@ -43,6 +42,7 @@ class QueueWorkerCommand extends ContainerAwareCommand {
     $this->generator = $queue_generator;
     parent::__construct();
   }
+
   /**
    * {@inheritdoc}
    */
@@ -53,30 +53,39 @@ class QueueWorkerCommand extends ContainerAwareCommand {
       ->setHelp($this->trans('commands.generate.plugin.queue.help'))
       ->addOption(
           'module',
-          null,
+          NULL,
           InputOption::VALUE_REQUIRED,
           'option'
       )->setAliases(['gqueue']);
   }
 
- /**
-  * {@inheritdoc}
-  */
+  /**
+   * {@inheritdoc}
+   */
   protected function interact(InputInterface $input, OutputInterface $output) {
-    // --module option
+    // --module option.
     $this->getModuleOption();
 
-    // --queue-file-class option
+    // --queue-file-class option.
     $queue_file = $input->getOption('queue-file');
     if (!$queue_file) {
-        $queue_file = $this->getIo()->ask(
+      $queue_file = $this->getIo()->ask(
             $this->trans('commands.generate.plugin.queue.questions.type-class'),
             'ExampleFieldType',
-            function ($typeClass) {
-                return $this->validator->validateClassName($typeClass);
-            }
+            $this->validator->validateClassName($queue_file)
         );
-        $input->setOption('type-class', $typeClass);
+      $input->setOption('queue-file', $queue_file);
+    }
+
+    // --queue-id option.
+    $queue_id = $input->getOption('queue-id');
+    if (!$queue_id) {
+      $queue_id = $this->getIo()->ask(
+          $this->trans('commands.generate.plugin.queue.questions.type-class'),
+          'ExampleFieldType',
+          $this->stringConverter->camelCaseToUnderscore(queue_file)
+      );
+      $input->setOption('queue-id', $queue_id);
     }
   }
 
@@ -86,7 +95,7 @@ class QueueWorkerCommand extends ContainerAwareCommand {
   protected function execute(InputInterface $input, OutputInterface $output) {
     // @see use Drupal\Console\Command\Shared\ConfirmationTrait::confirmOperation
     if (!$this->confirmOperation()) {
-        return 1;
+      return 1;
     }
     $module = $input->getOption('module');
     $queue_file = $input->getOption('queue-file');
@@ -100,4 +109,5 @@ class QueueWorkerCommand extends ContainerAwareCommand {
 
     return 0;
   }
+
 }
