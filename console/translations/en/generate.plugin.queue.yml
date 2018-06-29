@@ -1,6 +1,11 @@
 description: 'Drupal Console generated Queueworker.'
-options: {}
+options:
+  module: 'The module name'
+  queue-file: 'QueueWorker file name'
+  queue-id: 'QueueWorker id'
+questions:
+  queue-file: 'Enter the QueueWorker file name'
+  queue-id: 'Enter the QueueWorker id'
 help: ''
-arguments: {}
 messages:
-    success: 'I am a new generated command.'
+    success: 'The Queworker was generated successfully.'

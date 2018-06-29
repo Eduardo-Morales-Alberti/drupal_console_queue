@@ -8,7 +8,10 @@ use Drupal\Console\Core\Command\ContainerAwareCommand;
 use Drupal\Console\Core\Generator\GeneratorInterface;
 use Drupal\Console\Command\Shared\ModuleTrait;
 use Drupal\Console\Command\Shared\ConfirmationTrait;
+use Symfony\Component\Console\Input\InputOption;
+use Drupal\Console\Extension\Manager;
 use Drupal\Console\Annotations\DrupalCommand;
+use Drupal\Console\Utils\Validator;
 
 /**
  * Class QueueWorkerCommand.
@@ -31,15 +34,37 @@ class QueueWorkerCommand extends ContainerAwareCommand {
   protected $generator;
 
   /**
+   * Extension Manager.
+   *
+   * @var \Drupal\Console\Extension\Manager
+   */
+  protected $extensionManager;
+
+  /**
+   * Validator.
+   *
+   * @var \Drupal\Console\Utils\Validator
+   */
+  protected $validator;
+
+  /**
    * Constructs a new QueueWorkerCommand object.
    *
    * @param \Drupal\Console\Core\Generator\GeneratorInterface $queue_generator
    *   Queue Generator.
+   * @param \Drupal\Console\Extension\Manager $extensionManager
+   *   Extension manager.
+   * @param \Drupal\Console\Utils\Validator $validator
+   *   Validator.
    */
   public function __construct(
-    GeneratorInterface $queue_generator
+    GeneratorInterface $queue_generator,
+    Manager $extensionManager,
+      Validator $validator
   ) {
     $this->generator = $queue_generator;
+    $this->extensionManager = $extensionManager;
+    $this->validator = $validator;
     parent::__construct();
   }
 
@@ -55,8 +80,21 @@ class QueueWorkerCommand extends ContainerAwareCommand {
           'module',
           NULL,
           InputOption::VALUE_REQUIRED,
-          'option'
-      )->setAliases(['gpq']);
+          $this->trans('commands.generate.plugin.queue.options.module')
+      )
+      ->addOption(
+          'queue-file',
+          NULL,
+          InputOption::VALUE_REQUIRED,
+          $this->trans('commands.generate.plugin.queue.options.queue-file')
+      )
+      ->addOption(
+          'queue-id',
+          NULL,
+          InputOption::VALUE_REQUIRED,
+          $this->trans('commands.generate.plugin.queue.options.queue-id')
+      )
+      ->setAliases(['gpq']);
   }
 
   /**
@@ -70,7 +108,7 @@ class QueueWorkerCommand extends ContainerAwareCommand {
     $queue_file = $input->getOption('queue-file');
     if (!$queue_file) {
       $queue_file = $this->getIo()->ask(
-            $this->trans('commands.generate.plugin.queue.questions.type-class'),
+            $this->trans('commands.generate.plugin.queue.questions.queue-file'),
             'ExampleFieldType',
             $this->validator->validateClassName($queue_file)
         );
@@ -81,7 +119,7 @@ class QueueWorkerCommand extends ContainerAwareCommand {
     $queue_id = $input->getOption('queue-id');
     if (!$queue_id) {
       $queue_id = $this->getIo()->ask(
-          $this->trans('commands.generate.plugin.queue.questions.type-class'),
+          $this->trans('commands.generate.plugin.queue.questions.queue-id'),
           'ExampleFieldType',
           $this->stringConverter->camelCaseToUnderscore(queue_file)
       );
