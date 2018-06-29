@@ -32,8 +32,14 @@ class QueueWorkerCommand extends ContainerAwareCommand {
 
   /**
    * Constructs a new QueueWorkerCommand object.
+   *
+   * @param \Drupal\Console\Generator\ModuleFileGenerator $queue_generator
+   *   Queue Generator.
+   *
    */
-  public function __construct(GeneratorInterface $queue_generator) {
+  public function __construct(
+    GeneratorInterface $queue_generator
+  ) {
     $this->generator = $queue_generator;
     parent::__construct();
   }
@@ -43,8 +49,8 @@ class QueueWorkerCommand extends ContainerAwareCommand {
   protected function configure() {
     $this
       ->setName('generate:queue')
-      ->setDescription($this->trans('commands.generate.queue.description'))
-      ->setHelp($this->trans('commands.generate.queue.help'))
+      ->setDescription($this->trans('commands.generate.plugin.queue.description'))
+      ->setHelp($this->trans('commands.generate.plugin.queue.help'))
       ->addOption(
           'module',
           null,
@@ -60,6 +66,18 @@ class QueueWorkerCommand extends ContainerAwareCommand {
     // --module option
     $this->getModuleOption();
 
+    // --queue-file-class option
+    $queue_file = $input->getOption('queue-file');
+    if (!$queue_file) {
+        $queue_file = $this->getIo()->ask(
+            $this->trans('commands.generate.plugin.queue.questions.type-class'),
+            'ExampleFieldType',
+            function ($typeClass) {
+                return $this->validator->validateClassName($typeClass);
+            }
+        );
+        $input->setOption('type-class', $typeClass);
+    }
   }
 
   /**
@@ -70,7 +88,16 @@ class QueueWorkerCommand extends ContainerAwareCommand {
     if (!$this->confirmOperation()) {
         return 1;
     }
-    $this->getIo()->info($this->trans('commands.generate.queue.messages.success'));
-    $this->generator->generate([]);
+    $module = $input->getOption('module');
+    $queue_file = $input->getOption('queue-file');
+    $queue_id = $input->getOption('queue-id');
+    $this->generator->generate([
+      'module' => $module,
+      'queue_file' => $queue_file,
+      'queue_id' => $queue_id,
+    ]);
+    $this->chainQueue->addCommand('cache:rebuild', ['cache' => 'discovery']);
+
+    return 0;
   }
 }
