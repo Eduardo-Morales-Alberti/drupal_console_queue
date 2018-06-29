@@ -1,0 +1,6 @@
+description: 'Drupal Console generated Queueworker.'
+options: {}
+help: ''
+arguments: {}
+messages:
+    success: 'I am a new generated command.'

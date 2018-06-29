@@ -1,0 +1,11 @@
+services:
+  test.generate_queue:
+    class: Drupal\test\Command\QueueWorkerCommand
+    arguments: ['@test.generate_queue_generator']
+    tags:
+      - { name: drupal.command }
+  test.generate_queue_generator:
+    class: Drupal\test\Generator\QueueWorkerGenerator
+    arguments: []
+    tags:
+      - { name: drupal.generator }
