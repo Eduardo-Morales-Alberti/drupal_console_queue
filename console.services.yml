@@ -1,11 +1,11 @@
 services:
-  test.generate_queue:
-    class: Drupal\test\Command\QueueWorkerCommand
-    arguments: ['@test.generate_queue_generator']
+  drupal_console_queue.generate_queue:
+    class: Drupal\drupal_console_queue\Command\QueueWorkerCommand
+    arguments: ['@drupal_console_queue.generate_queue_generator']
     tags:
       - { name: drupal.command }
-  test.generate_queue_generator:
-    class: Drupal\test\Generator\QueueWorkerGenerator
-    arguments: []
+  drupal_console_queue.generate_queue_generator:
+    class: Drupal\drupal_console_queue\Generator\QueueWorkerGenerator
+    arguments: ['@console.extension_manager']
     tags:
       - { name: drupal.generator }
