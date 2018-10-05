@@ -1,0 +1,25 @@
+<?php
+
+namespace Drupal\{{ module }}\Plugin\QueueWorker;
+
+use Drupal\Core\Queue\QueueWorkerBase;
+
+/**
+ * Plugin implementation od the {{ queue_id }} queueworker.
+ *
+ * @QueueWorker (
+ *   id = "{{ queue_id }}",
+ *   title = @Translation("{{ label }}"),
+ *   cron = {"time" = {{ cron_time }}}
+ * )
+ */
+class {{ queue_file_name }} extends QueueWorkerBase {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function processItem($data) {
+    // Process item operations.
+  }
+
+}
