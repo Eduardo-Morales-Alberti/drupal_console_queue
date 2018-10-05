@@ -106,7 +106,19 @@ class QueueWorkerCommand extends ContainerAwareCommand {
           InputOption::VALUE_REQUIRED,
           $this->trans('commands.generate.plugin.queue.options.queue-id')
       )
-      ->setAliases(['gpq']);
+      ->addOption(
+          'cron-time',
+          NULL,
+          InputOption::VALUE_REQUIRED,
+          $this->trans('commands.generate.plugin.queue.options.cron-time')
+      )
+      ->addOption(
+          'label',
+          NULL,
+          InputOption::VALUE_REQUIRED,
+          $this->trans('commands.generate.plugin.queue.options.label')
+      )
+      ->setAliases(['gpqueue']);
   }
 
   /**
@@ -141,6 +153,26 @@ class QueueWorkerCommand extends ContainerAwareCommand {
       );
       $input->setOption('queue-id', $queue_id);
     }
+
+    // --cron-time option.
+    $cron_time = $input->getOption('cron-time');
+    if (!$cron_time) {
+      $cron_time = $this->getIo()->ask(
+          $this->trans('commands.generate.plugin.queue.questions.cron-time'),
+          30
+      );
+      $input->setOption('cron-time', $cron_time);
+    }
+
+    // --label option.
+    $label = $input->getOption('label');
+    if (!$label) {
+      $label = $this->getIo()->ask(
+          $this->trans('commands.generate.plugin.queue.questions.label'),
+          'Queue description.'
+      );
+      $input->setOption('label', $label);
+    }
   }
 
   /**
@@ -154,14 +186,15 @@ class QueueWorkerCommand extends ContainerAwareCommand {
     $module = $input->getOption('module');
     $queue_file = $input->getOption('queue-file');
     $queue_id = $input->getOption('queue-id');
+    $cron_time = $input->getOption('cron-time');
+    $label = $input->getOption('label');
     $this->generator->generate([
       'module' => $module,
-      'queue_file' => $queue_file,
+      'queue_file_name' => $queue_file,
       'queue_id' => $queue_id,
+      'cron_time' => $cron_time,
+      'label' => $label,
     ]);
-    $this->chainQueue->addCommand('cache:rebuild', ['cache' => 'discovery']);
-
-    return 0;
   }
 
 }
