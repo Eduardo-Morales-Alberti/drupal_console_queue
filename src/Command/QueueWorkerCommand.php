@@ -109,8 +109,10 @@ class QueueWorkerCommand extends ContainerAwareCommand {
     if (!$queue_file) {
       $queue_file = $this->getIo()->ask(
             $this->trans('commands.generate.plugin.queue.questions.queue-file'),
-            'ExampleFieldType',
-            $this->validator->validateClassName($queue_file)
+            'ExampleQueue',
+            function ($queue_file) {
+              return $this->validator->validateClassName($queue_file);
+            }
         );
       $input->setOption('queue-file', $queue_file);
     }
@@ -120,8 +122,8 @@ class QueueWorkerCommand extends ContainerAwareCommand {
     if (!$queue_id) {
       $queue_id = $this->getIo()->ask(
           $this->trans('commands.generate.plugin.queue.questions.queue-id'),
-          'ExampleFieldType',
-          $this->stringConverter->camelCaseToUnderscore(queue_file)
+          'exaple_queue_id',
+          $this->stringConverter->camelCaseToUnderscore($queue_id)
       );
       $input->setOption('queue-id', $queue_id);
     }
