@@ -12,6 +12,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Drupal\Console\Extension\Manager;
 use Drupal\Console\Annotations\DrupalCommand;
 use Drupal\Console\Utils\Validator;
+use Drupal\Console\Core\Utils\StringConverter;
 
 /**
  * Class QueueWorkerCommand.
@@ -48,6 +49,13 @@ class QueueWorkerCommand extends ContainerAwareCommand {
   protected $validator;
 
   /**
+   * String converter.
+   *
+   * @var \Drupal\Console\Core\Utils\StringConverter
+   */
+  protected $stringConverter;
+
+  /**
    * Constructs a new QueueWorkerCommand object.
    *
    * @param \Drupal\Console\Core\Generator\GeneratorInterface $queue_generator
@@ -56,15 +64,19 @@ class QueueWorkerCommand extends ContainerAwareCommand {
    *   Extension manager.
    * @param \Drupal\Console\Utils\Validator $validator
    *   Validator.
+   * @param \Drupal\Console\Core\Utils\StringConverter $stringConverter
+   *   String Converter.
    */
   public function __construct(
     GeneratorInterface $queue_generator,
     Manager $extensionManager,
-      Validator $validator
+    Validator $validator,
+    StringConverter $stringConverter
   ) {
     $this->generator = $queue_generator;
     $this->extensionManager = $extensionManager;
     $this->validator = $validator;
+    $this->stringConverter = $stringConverter;
     parent::__construct();
   }
 
@@ -122,8 +134,10 @@ class QueueWorkerCommand extends ContainerAwareCommand {
     if (!$queue_id) {
       $queue_id = $this->getIo()->ask(
           $this->trans('commands.generate.plugin.queue.questions.queue-id'),
-          'exaple_queue_id',
-          $this->stringConverter->camelCaseToUnderscore($queue_id)
+          'example_queue_id',
+          function ($queue_id) {
+            return $this->stringConverter->camelCaseToUnderscore($queue_id);
+          }
       );
       $input->setOption('queue-id', $queue_id);
     }
