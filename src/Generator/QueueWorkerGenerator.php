@@ -38,6 +38,7 @@ class QueueWorkerGenerator extends Generator implements GeneratorInterface {
   public function generate(array $parameters) {
     $module = $parameters['module'];
     $queue_file_name = $parameters['queue_file_name'];
+    $this->renderer->addSkeletonDir(__DIR__ . '/../../console/templates');
     $this->renderFile(
       'module/src/Plugin/QueueWorker/queue_worker.php.twig',
       $this->extensionManager->getPluginPath($module, 'QueueWorker') . '/' . $queue_file_name . '.php',
