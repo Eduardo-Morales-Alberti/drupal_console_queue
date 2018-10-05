@@ -1,11 +1,14 @@
-description: 'Drupal Console generated Queueworker.'
+description: 'Drupal Console Queueworker generator.'
 options:
   module: 'The module name'
   queue-file: 'QueueWorker file name'
   queue-id: 'QueueWorker id'
+  cron-time: 'Cron time'
+  label: 'Queue description'
 questions:
   queue-file: 'Enter the QueueWorker file name'
   queue-id: 'Enter the QueueWorker id'
-help: ''
+  cront-time: 'Enter the cron time to execute you queue'
+  label: 'Enter the Queue description'
 messages:
-    success: 'The Queworker was generated successfully.'
+    success: 'The Queueworker was generated successfully.'
