@@ -9,7 +9,6 @@ use Drupal\Console\Core\Generator\GeneratorInterface;
 use Drupal\Console\Command\Shared\ModuleTrait;
 use Drupal\Console\Command\Shared\ConfirmationTrait;
 use Symfony\Component\Console\Input\InputOption;
-use Drupal\Console\Extension\Manager;
 use Drupal\Console\Annotations\DrupalCommand;
 use Drupal\Console\Utils\Validator;
 use Drupal\Console\Core\Utils\StringConverter;
@@ -34,13 +33,6 @@ class PluginQueueWorkerCommand extends ContainerAwareCommand {
    * @var \Drupal\Console\Core\Generator\GeneratorInterface
    */
   protected $generator;
-
-  /**
-   * Extension Manager.
-   *
-   * @var \Drupal\Console\Extension\Manager
-   */
-  protected $extensionManager;
 
   /**
    * Validator.
