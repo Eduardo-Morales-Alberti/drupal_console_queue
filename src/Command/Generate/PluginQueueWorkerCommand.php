@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\drupal_console_queue\Command;
+namespace Drupal\drupal_console_queue\Command\Generate;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -13,16 +13,17 @@ use Drupal\Console\Extension\Manager;
 use Drupal\Console\Annotations\DrupalCommand;
 use Drupal\Console\Utils\Validator;
 use Drupal\Console\Core\Utils\StringConverter;
+use Drupal\Console\Core\Utils\ChainQueue;
 
 /**
- * Class QueueWorkerCommand.
+ * Class PluginQueueWorkerCommand.
  *
  * @DrupalCommand (
  *     extension="drupal_console_queue",
  *     extensionType="module"
  * )
  */
-class QueueWorkerCommand extends ContainerAwareCommand {
+class PluginQueueWorkerCommand extends ContainerAwareCommand {
 
   use ModuleTrait;
   use ConfirmationTrait;
@@ -56,7 +57,7 @@ class QueueWorkerCommand extends ContainerAwareCommand {
   protected $stringConverter;
 
   /**
-   * Constructs a new QueueWorkerCommand object.
+   * Constructs a new PluginQueueWorkerCommand object.
    *
    * @param \Drupal\Console\Core\Generator\GeneratorInterface $queue_generator
    *   Queue Generator.
@@ -66,17 +67,21 @@ class QueueWorkerCommand extends ContainerAwareCommand {
    *   Validator.
    * @param \Drupal\Console\Core\Utils\StringConverter $stringConverter
    *   String Converter.
+   * @param \Drupal\Console\Core\Utils\ChainQueue $chainQueue
+   *   Chain queue.
    */
   public function __construct(
     GeneratorInterface $queue_generator,
     Manager $extensionManager,
     Validator $validator,
-    StringConverter $stringConverter
+    StringConverter $stringConverter,
+    ChainQueue $chainQueue
   ) {
     $this->generator = $queue_generator;
     $this->extensionManager = $extensionManager;
     $this->validator = $validator;
     $this->stringConverter = $stringConverter;
+    $this->chainQueue = $chainQueue;
     parent::__construct();
   }
 
@@ -95,16 +100,16 @@ class QueueWorkerCommand extends ContainerAwareCommand {
           $this->trans('commands.generate.plugin.queue.options.module')
       )
       ->addOption(
-          'queue-file',
+          'class',
           NULL,
           InputOption::VALUE_REQUIRED,
-          $this->trans('commands.generate.plugin.queue.options.queue-file')
+          $this->trans('commands.generate.plugin.queue.options.class')
       )
       ->addOption(
-          'queue-id',
+          'plugin-id',
           NULL,
           InputOption::VALUE_REQUIRED,
-          $this->trans('commands.generate.plugin.queue.options.queue-id')
+          $this->trans('commands.generate.plugin.queue.options.plugin-id')
       )
       ->addOption(
           'cron-time',
@@ -128,30 +133,30 @@ class QueueWorkerCommand extends ContainerAwareCommand {
     // --module option.
     $this->getModuleOption();
 
-    // --queue-file-class option.
-    $queue_file = $input->getOption('queue-file');
-    if (!$queue_file) {
-      $queue_file = $this->getIo()->ask(
-            $this->trans('commands.generate.plugin.queue.questions.queue-file'),
+    // --class option.
+    $queue_class = $input->getOption('class');
+    if (!$queue_class) {
+      $queue_class = $this->getIo()->ask(
+            $this->trans('commands.generate.plugin.queue.questions.class'),
             'ExampleQueue',
-            function ($queue_file) {
-              return $this->validator->validateClassName($queue_file);
+            function ($queue_class) {
+              return $this->validator->validateClassName($queue_class);
             }
         );
-      $input->setOption('queue-file', $queue_file);
+      $input->setOption('class', $queue_class);
     }
 
-    // --queue-id option.
-    $queue_id = $input->getOption('queue-id');
-    if (!$queue_id) {
-      $queue_id = $this->getIo()->ask(
-          $this->trans('commands.generate.plugin.queue.questions.queue-id'),
-          'example_queue_id',
-          function ($queue_id) {
-            return $this->stringConverter->camelCaseToUnderscore($queue_id);
+    // --plugin-id option.
+    $plugin_id = $input->getOption('plugin-id');
+    if (!$plugin_id) {
+      $plugin_id = $this->getIo()->ask(
+          $this->trans('commands.generate.plugin.queue.questions.plugin-id'),
+          'example_plugin_id',
+          function ($plugin_id) {
+            return $this->stringConverter->camelCaseToUnderscore($plugin_id);
           }
       );
-      $input->setOption('queue-id', $queue_id);
+      $input->setOption('plugin-id', $plugin_id);
     }
 
     // --cron-time option.
@@ -184,17 +189,21 @@ class QueueWorkerCommand extends ContainerAwareCommand {
       return 1;
     }
     $module = $input->getOption('module');
-    $queue_file = $input->getOption('queue-file');
-    $queue_id = $input->getOption('queue-id');
+    $queue_class = $input->getOption('class');
+    $plugin_id = $input->getOption('plugin-id');
     $cron_time = $input->getOption('cron-time');
     $label = $input->getOption('label');
     $this->generator->generate([
       'module' => $module,
-      'queue_file_name' => $queue_file,
-      'queue_id' => $queue_id,
+      'class_name' => $queue_class,
+      'plugin_id' => $plugin_id,
       'cron_time' => $cron_time,
       'label' => $label,
     ]);
+
+    $this->chainQueue->addCommand('cache:rebuild', ['cache' => 'discovery']);
+
+    return 0;
   }
 
 }
