@@ -1,7 +1,7 @@
 services:
   drupal_console_queue.generate_queue:
     class: Drupal\drupal_console_queue\Command\Generate\PluginQueueWorkerCommand
-    arguments: ['@drupal_console_queue.plugin_queue_generator','@console.extension_manager','@console.validator','@console.string_converter','@console.chain_queue']
+    arguments: ['@drupal_console_queue.plugin_queue_generator','@console.validator','@console.string_converter','@console.chain_queue']
     tags:
       - { name: drupal.command }
   drupal_console_queue.plugin_queue_generator:
