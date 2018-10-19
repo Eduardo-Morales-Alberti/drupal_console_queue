@@ -1,11 +1,11 @@
 services:
   drupal_console_queue.generate_queue:
-    class: Drupal\drupal_console_queue\Command\QueueWorkerCommand
-    arguments: ['@drupal_console_queue.generate_queue_generator', '@console.extension_manager', '@console.validator', '@console.string_converter']
+    class: Drupal\drupal_console_queue\Command\Generate\PluginQueueWorkerCommand
+    arguments: ['@drupal_console_queue.plugin_queue_generator','@console.extension_manager','@console.validator','@console.string_converter','@console.chain_queue']
     tags:
       - { name: drupal.command }
-  drupal_console_queue.generate_queue_generator:
-    class: Drupal\drupal_console_queue\Generator\QueueWorkerGenerator
+  drupal_console_queue.plugin_queue_generator:
+    class: Drupal\drupal_console_queue\Generator\PluginQueueWorkerGenerator
     arguments: ['@console.extension_manager']
     tags:
       - { name: drupal.generator }

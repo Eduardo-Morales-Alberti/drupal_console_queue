@@ -11,7 +11,7 @@ use Drupal\Console\Extension\Manager;
  *
  * @package Drupal\Console\Generator
  */
-class QueueWorkerGenerator extends Generator implements GeneratorInterface {
+class PluginQueueWorkerGenerator extends Generator implements GeneratorInterface {
 
   /**
    * Extension Manager.
