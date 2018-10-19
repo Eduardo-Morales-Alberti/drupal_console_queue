@@ -15,7 +15,7 @@ questions:
 examples:
   - description: 'Generate a queue worker plugin specifying the module name, the class and its plugin id'
     execution: |
-      drupal generate:plugin:migrate:source  \
+      drupal generate:plugin:queue  \
         --module="modulename"  \
         --class="PluginClassName"  \
         --plugin-id="plugin_class_name"  \
